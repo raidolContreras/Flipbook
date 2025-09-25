@@ -1,0 +1,24 @@
+{
+    "page": {
+        "title": "Revista Montrer Oct 2025"
+    },
+    "brand": {
+        "text": "Revista Montrer Oct 2025",
+        "logo_url": "https:\/\/serviciosocial.unimontrer.edu.mx\/view\/assets\/images\/logo-color.png",
+        "logo_alt": "Logo UNIMO",
+        "logo_width": "auto",
+        "logo_height": 36
+    },
+    "pdf": {
+        "url": "http:\/\/localhost\/Flipbook\/uploads\/3eac98da46f8b8ad.pdf",
+        "allow_query_override": true
+    },
+    "texts": {
+        "loading": "Cargando Revista",
+        "prev": "Anterior",
+        "next": "Siguiente",
+        "pagesHeader": "Páginas",
+        "pageInfoPattern": "Páginas {left}-{right} de {count}",
+        "thumbAltPattern": "Miniatura página {page}"
+    }
+}

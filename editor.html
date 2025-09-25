@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Editor Config — Revista UNIMO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .logo-preview {
+            width: 56px;
+            height: 56px;
+            object-fit: contain;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+        }
+
+        .hint {
+            color: #64748b;
+            font-size: .9rem;
+        }
+
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: .5
+            }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background-color: #059669;
+            color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, .1), 0 2px 4px -1px rgba(0, 0, 0, .06);
+            z-index: 50;
+            transition: transform .3s ease-in-out;
+            transform: translateY(100px);
+        }
+
+        .toast.show {
+            transform: translateY(0)
+        }
+
+        .toast.error {
+            background-color: #dc2626
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+
+    <!-- Toast -->
+    <div id="toast" class="toast hidden">
+        <div class="flex items-center">
+            <i class="fa-solid fa-circle-check mr-2"></i>
+            <span id="toast-message">Operación realizada con éxito</span>
+        </div>
+    </div>
+
+    <!-- Topbar (sólo Guardar) -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fa-regular fa-rectangle-list text-primary-600 mr-2 text-xl"></i>
+                    <span class="font-semibold text-gray-900">Editor Flipbook</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button id="btnSaveServer"
+                        class="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors">
+                        <i class="fa-solid fa-floppy-disk mr-1"></i> Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Panel izquierdo -->
+            <div class="lg:col-span-2 space-y-6">
+
+                <!-- Página -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                        <h2 class="text-lg font-medium text-gray-900 flex items-center">
+                            <i class="fa-solid fa-file-lines mr-2 text-primary-600"></i> Configuración de Página
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Título de la página</label>
+                            <div class="text-xs text-gray-500 mb-1 flex items-center">
+                                <span class="bg-gray-100 px-1.5 py-0.5 rounded font-mono mr-1">page.title</span>
+                                <span>El título que aparecerá en el navegador</span>
+                            </div>
+                            <input id="page.title" type="text"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                placeholder="Revista UNIMO">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Marca -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                        <h2 class="text-lg font-medium text-gray-900 flex items-center">
+                            <i class="fa-solid fa-palette mr-2 text-primary-600"></i> Identidad de Marca
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Texto de la marca</label>
+                                <div class="text-xs text-gray-500 mb-1 flex items-center">
+                                    <span class="bg-gray-100 px-1.5 py-0.5 rounded font-mono mr-1">brand.text</span>
+                                    <span>Nombre que aparecerá junto al logo</span>
+                                </div>
+                                <input id="brand.text" type="text"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="Revista UNIMO">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Texto alternativo del
+                                    logo</label>
+                                <div class="text-xs text-gray-500 mb-1 flex items-center">
+                                    <span class="bg-gray-100 px-1.5 py-0.5 rounded font-mono mr-1">brand.logo_alt</span>
+                                    <span>Texto para accesibilidad</span>
+                                </div>
+                                <input id="brand.logo_alt" type="text"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="Logo UNIMO">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">URL del logo</label>
+                            <div class="text-xs text-gray-500 mb-1 flex items-center">
+                                <span class="bg-gray-100 px-1.5 py-0.5 rounded font-mono mr-1">brand.logo_url</span>
+                                <span>Dirección web de la imagen del logo</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <input id="brand.logo_url" type="text"
+                                    class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="https://...">
+                                <button id="btnTestLogo"
+                                    class="px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+                                    type="button" title="Vista previa">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                                <label
+                                    class="px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors cursor-pointer"
+                                    title="Subir imagen">
+                                    <i class="fa-solid fa-upload"></i>
+                                    <input id="logoFile" type="file" accept="image/*" class="hidden">
+                                </label>
+                                <button id="btnClearLogo"
+                                    class="px-3 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors"
+                                    type="button" title="Eliminar logo">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                            <p class="mt-1 text-xs text-gray-500">Puedes pegar la URL del logo o subir uno nuevo.</p>
+                        </div>
+
+                        <div class="flex items-center space-x-4 mb-4 p-3 bg-gray-50 rounded-lg">
+                            <img id="logoPreview" class="logo-preview" alt="Vista previa del logo">
+                            <div>
+                                <p class="text-sm font-medium text-gray-700">Vista previa del logo</p>
+                                <p class="text-xs text-gray-500">Se mostrará así en la revista</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Ancho del logo</label>
+                                <div class="text-xs text-gray-500 mb-1 flex items-center">
+                                    <span
+                                        class="bg-gray-100 px-1.5 py-0.5 rounded font-mono mr-1">brand.logo_width</span>
+                                    <span>En píxeles o "auto"</span>
+                                </div>
+                                <input id="brand.logo_width" type="text"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="auto o 120">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Alto del logo</label>
+                                <div class="text-xs text-gray-500 mb-1 flex items-center">
+                                    <span
+                                        class="bg-gray-100 px-1.5 py-0.5 rounded font-mono mr-1">brand.logo_height</span>
+                                    <span>En píxeles (solo números)</span>
+                                </div>
+                                <input id="brand.logo_height" type="number"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="28">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PDF -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                        <h2 class="text-lg font-medium text-gray-900 flex items-center">
+                            <i class="fa-solid fa-file-pdf mr-2 text-primary-600"></i> Configuración del PDF
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">URL del PDF</label>
+                            <div class="text-xs text-gray-500 mb-1 flex items-center">
+                                <span class="bg-gray-100 px-1.5 py-0.5 rounded font-mono mr-1">pdf.url</span>
+                                <span>Dirección web del documento PDF</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <input id="pdf.url" type="text"
+                                    class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="./documento.pdf">
+                                <label
+                                    class="px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors cursor-pointer"
+                                    title="Subir PDF">
+                                    <i class="fa-solid fa-upload"></i>
+                                    <input id="pdfFile" type="file" class="hidden" accept="application/pdf">
+                                </label>
+                            </div>
+                            <p class="mt-1 text-xs text-gray-500">Puedes pegar una URL o subir un PDF directamente.</p>
+                        </div>
+                        <div class="flex items-center">
+                            <input id="pdf.allow_query_override"
+                                class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                                type="checkbox">
+                            <label for="pdf.allow_query_override" class="ml-2 block text-sm text-gray-700">
+                                Permitir que la URL del PDF se pueda cambiar desde la dirección web
+                            </label>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1 flex items-center">
+                            <span class="bg-gray-100 px-1.5 py-0.5 rounded font-mono mr-1">allow_query_override</span>
+                            <span>Útil para testing o compartir enlaces específicos</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Textos UI (SIN "Abrir PDF") -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    <details closed>
+                        <summary
+                            class="px-6 py-4 border-b border-gray-200 bg-gray-50 cursor-pointer select-none flex items-center">
+                            <h2 class="text-lg font-medium text-gray-900 flex items-center">
+                                <i class="fa-solid fa-font mr-2 text-primary-600"></i> Textos de Interfaz
+                            </h2>
+                        </summary>
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="md:col-span-2">
+                                    <div class="flex items-center gap-2">
+                                        <input id="disableFields" type="checkbox"
+                                            class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                                            checked>
+                                        <label for="disableFields" class="text-sm font-medium text-gray-700">
+                                            Deshabilitar campos de texto
+                                        </label>
+                                    </div>
+                                    <span class="block text-xs text-gray-500 mt-1">
+                                        Si está marcado, los campos de texto estarán deshabilitados
+                                    </span>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Texto de carga</label>
+                                    <div class="text-xs text-gray-500 mb-1 flex items-center">
+                                        <span
+                                            class="bg-gray-100 px-1.5 py-0.5 rounded font-mono mr-1">texts.loading</span>
+                                    </div>
+                                    <input id="texts.loading" type="text"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled"
+                                        placeholder="Cargando Revista">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Texto "Anterior"</label>
+                                    <div class="text-xs text-gray-500 mb-1 flex items-center">
+                                        <span class="bg-gray-100 px-1.5 py-0.5 rounded font-mono mr-1">texts.prev</span>
+                                    </div>
+                                    <input id="texts.prev" type="text"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled"
+                                        placeholder="Anterior">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Texto
+                                        "Siguiente"</label>
+                                    <div class="text-xs text-gray-500 mb-1 flex items-center">
+                                        <span class="bg-gray-100 px-1.5 py-0.5 rounded font-mono mr-1">texts.next</span>
+                                    </div>
+                                    <input id="texts.next" type="text"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled"
+                                        placeholder="Siguiente">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Encabezado de
+                                        páginas</label>
+                                    <div class="text-xs text-gray-500 mb-1 flex items-center">
+                                        <span
+                                            class="bg-gray-100 px-1.5 py-0.5 rounded font-mono mr-1">texts.pagesHeader</span>
+                                    </div>
+                                    <input id="texts.pagesHeader" type="text"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled"
+                                        placeholder="Páginas">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Patrón de información de
+                                        página</label>
+                                    <div class="text-xs text-gray-500 mb-1 flex items-center">
+                                        <span
+                                            class="bg-gray-100 px-1.5 py-0.5 rounded font-mono mr-1">texts.pageInfoPattern</span>
+                                        <span>Usa: {left}, {right}, {count}</span>
+                                    </div>
+                                    <input id="texts.pageInfoPattern" type="text"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled"
+                                        placeholder="Páginas {left}-{right} de {count}">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Patrón alt de
+                                        miniaturas</label>
+                                    <div class="text-xs text-gray-500 mb-1 flex items-center">
+                                        <span
+                                            class="bg-gray-100 px-1.5 py-0.5 rounded font-mono mr-1">texts.thumbAltPattern</span>
+                                        <span>Usa: {page}</span>
+                                    </div>
+                                    <input id="texts.thumbAltPattern" type="text"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled"
+                                        placeholder="Miniatura página {page}">
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+            </div>
+
+            <!-- Panel derecho -->
+            <div class="space-y-6">
+                <!-- Vista previa de marca -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                        <h2 class="text-lg font-medium text-gray-900 flex items-center">
+                            <i class="fa-solid fa-eye mr-2 text-primary-600"></i> Vista Previa
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center space-x-4 mb-4 p-4 bg-gray-50 rounded-lg">
+                            <img id="brandPreviewImg" class="logo-preview" alt="Logo preview">
+                            <div>
+                                <div id="brandPreviewText" class="font-semibold text-gray-900"></div>
+                                <div class="text-xs text-gray-500 mt-1">
+                                    <span class="font-medium">W:</span><span id="brandW">auto</span>
+                                    <span class="font-medium ml-2">H:</span><span id="brandH">28</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">Así se verá tu marca en la revista digital.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="assets/js/editor.js"></script>
+</body>
+
+</html>
